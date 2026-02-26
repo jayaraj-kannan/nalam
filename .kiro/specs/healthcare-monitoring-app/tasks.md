@@ -29,25 +29,25 @@ The tasks are organized to build incrementally: infrastructure setup, core data 
     - **Property 1: Health data persistence with validation**
     - **Validates: Requirements 1.1, 1.4, 2.4, 6.5**
   
-  - [-] 2.3 Create DynamoDB table schemas and indexes
+  - [x] 2.3 Create DynamoDB table schemas and indexes
     - Design tables for users, care circles, health records, medications, appointments
     - Create GSI for efficient querying by userId, timestamp, alert status
     - Implement data access layer with encryption at rest
     - _Requirements: 8.1, 8.4_
   
-  - [~] 2.4 Create Timestream database schema for time-series health data
+  - [x] 2.4 Create Timestream database schema for time-series health data
     - Design tables for vital signs, device readings, sensor data
     - Configure data retention policies and memory/magnetic store allocation
     - _Requirements: 1.1, 1.2, 7.1_
 
 - [ ] 3. Implement authentication and authorization system
-  - [~] 3.1 Configure Amazon Cognito user pools
+  - [x] 3.1 Configure Amazon Cognito user pools
     - Set up separate user pools for Primary and Secondary users
     - Configure multi-factor authentication (MFA) requirements
     - Implement password policies and account recovery flows
     - _Requirements: 8.2_
   
-  - [~] 3.2 Create authentication Lambda functions
+  - [x] 3.2 Create authentication Lambda functions
     - Implement user registration with email verification
     - Implement login with MFA support
     - Implement token refresh and session management
@@ -58,7 +58,7 @@ The tasks are organized to build incrementally: infrastructure setup, core data 
     - **Property 13: Data encryption and authentication**
     - **Validates: Requirements 8.1, 8.2**
   
-  - [~] 3.4 Implement authorization and permission system
+  - [x] 3.4 Implement authorization and permission system
     - Create permission matrix for care circle data access
     - Implement API Gateway authorizer Lambda function
     - Create access control logic for health data sharing
@@ -69,7 +69,7 @@ The tasks are organized to build incrementally: infrastructure setup, core data 
     - **Property 8: Care circle data access and sharing**
     - **Validates: Requirements 4.1, 4.5, 8.4, 8.5**
 
-- [~] 4. Checkpoint - Ensure authentication and data models are working
+- [x] 4. Checkpoint - Ensure authentication and data models are working
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 5. Implement Health Monitoring Service

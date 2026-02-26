@@ -17,7 +17,7 @@ describe('Data Access Layer', () => {
   });
 
   test('should export table names', () => {
-    const { TABLES } = require('../dynamodb-client');
+    const { TABLES } = require('../../dynamodb-client');
     
     expect(TABLES.USERS).toBe('test-users');
     expect(TABLES.HEALTH_RECORDS).toBe('test-health-records');

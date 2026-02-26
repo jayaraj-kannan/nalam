@@ -12,6 +12,7 @@ import * as ses from 'aws-cdk-lib/aws-ses';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as cloudtrail from 'aws-cdk-lib/aws-cloudtrail';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import * as timestream from 'aws-cdk-lib/aws-timestream';
 
 export interface HealthcareMonitoringStackProps extends cdk.StackProps {
   environment: 'dev' | 'staging' | 'prod';
@@ -311,6 +312,63 @@ export class HealthcareMonitoringStack extends cdk.Stack {
       eventBusName: `healthcare-events-${environment}`,
     });
 
+    // Timestream Database for time-series health data (Requirements 1.1, 1.2, 7.1)
+    const timestreamDatabase = new timestream.CfnDatabase(this, 'TimestreamDatabase', {
+      databaseName: `healthcare-timeseries-${environment}`,
+      kmsKeyId: encryptionKey.keyId,
+    });
+
+    // Timestream Table for Vital Signs
+    // Stores heart rate, blood pressure, temperature, oxygen saturation, weight
+    const vitalSignsTable = new timestream.CfnTable(this, 'VitalSignsTable', {
+      databaseName: timestreamDatabase.databaseName!,
+      tableName: 'vital-signs',
+      retentionProperties: {
+        // Memory store: 24 hours for recent data (fast queries)
+        memoryStoreRetentionPeriodInHours: '24',
+        // Magnetic store: 7 years for HIPAA compliance
+        magneticStoreRetentionPeriodInDays: '2555',
+      },
+      magneticStoreWriteProperties: {
+        enableMagneticStoreWrites: true,
+      },
+    });
+    vitalSignsTable.addDependency(timestreamDatabase);
+
+    // Timestream Table for Device Readings
+    // Stores raw data from health devices and wearables
+    const deviceReadingsTable = new timestream.CfnTable(this, 'DeviceReadingsTable', {
+      databaseName: timestreamDatabase.databaseName!,
+      tableName: 'device-readings',
+      retentionProperties: {
+        // Memory store: 48 hours for device data (more frequent queries)
+        memoryStoreRetentionPeriodInHours: '48',
+        // Magnetic store: 7 years for HIPAA compliance
+        magneticStoreRetentionPeriodInDays: '2555',
+      },
+      magneticStoreWriteProperties: {
+        enableMagneticStoreWrites: true,
+      },
+    });
+    deviceReadingsTable.addDependency(timestreamDatabase);
+
+    // Timestream Table for Sensor Data
+    // Stores continuous monitoring data from IoT sensors
+    const sensorDataTable = new timestream.CfnTable(this, 'SensorDataTable', {
+      databaseName: timestreamDatabase.databaseName!,
+      tableName: 'sensor-data',
+      retentionProperties: {
+        // Memory store: 12 hours for high-frequency sensor data
+        memoryStoreRetentionPeriodInHours: '12',
+        // Magnetic store: 1 year for sensor data (less critical for long-term)
+        magneticStoreRetentionPeriodInDays: '365',
+      },
+      magneticStoreWriteProperties: {
+        enableMagneticStoreWrites: true,
+      },
+    });
+    sensorDataTable.addDependency(timestreamDatabase);
+
     // API Gateway (Requirement 8.2)
     const api = new apigateway.RestApi(this, 'HealthcareApi', {
       restApiName: `healthcare-monitoring-api-${environment}`,
@@ -374,6 +432,26 @@ export class HealthcareMonitoringStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'EncryptionKeyId', {
       value: encryptionKey.keyId,
       description: 'KMS Encryption Key ID',
+    });
+
+    new cdk.CfnOutput(this, 'TimestreamDatabaseName', {
+      value: timestreamDatabase.databaseName!,
+      description: 'Timestream Database Name',
+    });
+
+    new cdk.CfnOutput(this, 'VitalSignsTableName', {
+      value: vitalSignsTable.tableName!,
+      description: 'Timestream Vital Signs Table Name',
+    });
+
+    new cdk.CfnOutput(this, 'DeviceReadingsTableName', {
+      value: deviceReadingsTable.tableName!,
+      description: 'Timestream Device Readings Table Name',
+    });
+
+    new cdk.CfnOutput(this, 'SensorDataTableName', {
+      value: sensorDataTable.tableName!,
+      description: 'Timestream Sensor Data Table Name',
     });
   }
 }

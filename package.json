@@ -1,0 +1,28 @@
+{
+  "name": "healthcare-monitoring-app",
+  "version": "1.0.0",
+  "description": "Healthcare Monitoring App for elderly users and caregivers",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "infrastructure"
+  ],
+  "scripts": {
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:test": "cd frontend && npm test",
+    "infra:deploy": "cd infrastructure && npm run deploy",
+    "infra:synth": "cd infrastructure && npm run synth",
+    "infra:diff": "cd infrastructure && npm run diff",
+    "test": "npm run frontend:test"
+  },
+  "keywords": [
+    "healthcare",
+    "monitoring",
+    "elderly-care",
+    "aws",
+    "react"
+  ],
+  "author": "",
+  "license": "MIT"
+}

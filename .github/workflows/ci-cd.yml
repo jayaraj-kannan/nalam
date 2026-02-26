@@ -1,0 +1,200 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+env:
+  NODE_VERSION: '18.x'
+
+jobs:
+  test-frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+      
+      - name: Run linter
+        run: |
+          cd frontend
+          npm run lint
+      
+      - name: Run tests
+        run: |
+          cd frontend
+          npm test
+      
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+
+  test-infrastructure:
+    name: Test Infrastructure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          cd infrastructure
+          npm ci
+      
+      - name: Run tests
+        run: |
+          cd infrastructure
+          npm test
+      
+      - name: Build
+        run: |
+          cd infrastructure
+          npm run build
+
+  deploy-dev:
+    name: Deploy to Development
+    needs: [test-frontend, test-infrastructure]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment: development
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      
+      - name: Install infrastructure dependencies
+        run: |
+          cd infrastructure
+          npm ci
+      
+      - name: Deploy infrastructure
+        run: |
+          cd infrastructure
+          npx cdk deploy HealthcareMonitoring-Dev --require-approval never
+      
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+      
+      - name: Deploy frontend to S3
+        run: |
+          aws s3 sync frontend/dist s3://healthcare-frontend-dev-${{ secrets.AWS_ACCOUNT_ID }} --delete
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: [test-frontend, test-infrastructure]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      
+      - name: Install infrastructure dependencies
+        run: |
+          cd infrastructure
+          npm ci
+      
+      - name: Deploy infrastructure
+        run: |
+          cd infrastructure
+          npx cdk deploy HealthcareMonitoring-Staging --require-approval never
+      
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+      
+      - name: Deploy frontend to S3
+        run: |
+          aws s3 sync frontend/dist s3://healthcare-frontend-staging-${{ secrets.AWS_ACCOUNT_ID }} --delete
+
+  deploy-prod:
+    name: Deploy to Production
+    needs: [test-frontend, test-infrastructure]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      
+      - name: Install infrastructure dependencies
+        run: |
+          cd infrastructure
+          npm ci
+      
+      - name: Deploy infrastructure
+        run: |
+          cd infrastructure
+          npx cdk deploy HealthcareMonitoring-Prod --require-approval never
+      
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+      
+      - name: Deploy frontend to S3
+        run: |
+          aws s3 sync frontend/dist s3://healthcare-frontend-prod-${{ secrets.AWS_ACCOUNT_ID }} --delete

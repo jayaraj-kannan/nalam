@@ -356,7 +356,7 @@ The tasks are organized to build incrementally: infrastructure setup, core data 
     - Display medication schedule in clear, visual format
     - _Requirements: 2.1, 2.2_
   
-  - [~] 13.7 Create emergency alert interface
+  - [-] 13.7 Create emergency alert interface
     - Build large, prominent emergency button
     - Implement one-tap emergency alert activation
     - Show confirmation and status of alert sent

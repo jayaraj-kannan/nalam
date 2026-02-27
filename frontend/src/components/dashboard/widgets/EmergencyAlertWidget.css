@@ -1,6 +1,6 @@
 /**
  * Emergency Alert Widget Styles
- * Prominent, high-visibility emergency button
+ * Prominent, high-visibility emergency button with contact information
  */
 
 .emergency-alert-widget {
@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem;
   padding: 2rem;
   background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
   border: 3px solid #d32f2f;
@@ -46,8 +46,10 @@
 
 .emergency-help-text {
   text-align: center;
+  font-weight: 600;
 }
 
+/* Confirmation state */
 .emergency-confirmation {
   display: flex;
   flex-direction: column;
@@ -55,6 +57,99 @@
   gap: 0.75rem;
   text-align: center;
   padding: 1rem;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.emergency-confirmation-icon {
+  font-size: 4rem;
+  color: #2e7d32;
+  animation: scaleIn 0.5s ease-out;
+}
+
+.emergency-id {
+  font-family: monospace;
+  margin-top: 0.5rem;
+}
+
+/* Error state */
+.emergency-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.emergency-retry-button {
+  margin-top: 0.5rem;
+}
+
+/* Emergency contacts display */
+.emergency-contacts {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+}
+
+.emergency-contact {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.emergency-contact.primary-contact {
+  border: 2px solid #1976d2;
+  background: #e3f2fd;
+}
+
+.contact-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-phone {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 0.25rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 /* High contrast theme */
@@ -63,8 +158,29 @@
   background: #fff;
 }
 
+.theme-high-contrast .emergency-contacts {
+  background: #fff;
+  border-width: 3px;
+  border-color: #000;
+}
+
+.theme-high-contrast .emergency-contact {
+  border-width: 2px;
+  border-color: #000;
+}
+
+.theme-high-contrast .emergency-contact.primary-contact {
+  border-width: 3px;
+  background: #fff;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
+  .emergency-alert-widget {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
   .emergency-button {
     min-height: 80px;
     font-size: 1.5rem;
@@ -73,4 +189,28 @@
   .emergency-icon {
     font-size: 2rem;
   }
+
+  .emergency-confirmation-icon {
+    font-size: 3rem;
+  }
+
+  .emergency-contacts {
+    padding: 0.75rem;
+  }
+
+  .emergency-contact {
+    padding: 0.5rem;
+  }
+
+  .contact-phone {
+    font-size: 1rem;
+  }
 }
+
+/* Print styles - hide emergency button when printing */
+@media print {
+  .emergency-button {
+    display: none;
+  }
+}
+

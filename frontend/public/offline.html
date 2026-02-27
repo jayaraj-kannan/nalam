@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Healthcare Monitoring</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .offline-container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .offline-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+      background: #f3f4f6;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #1f2937;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    p {
+      font-size: 20px;
+      color: #6b7280;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .features {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 30px 0;
+      text-align: left;
+    }
+
+    .features h2 {
+      font-size: 22px;
+      color: #1f2937;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .features ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .features li {
+      font-size: 18px;
+      color: #4b5563;
+      padding: 12px 0;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+    }
+
+    .features li:last-child {
+      border-bottom: none;
+    }
+
+    .features li::before {
+      content: '✓';
+      color: #10b981;
+      font-weight: bold;
+      font-size: 24px;
+      margin-right: 12px;
+    }
+
+    .emergency-button {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 20px 40px;
+      font-size: 24px;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 20px;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .emergency-button:hover {
+      background: #b91c1c;
+    }
+
+    .emergency-button:active {
+      transform: scale(0.98);
+    }
+
+    .retry-button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      font-size: 20px;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.2s;
+    }
+
+    .retry-button:hover {
+      background: #1d4ed8;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .status.offline {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .status.online {
+      background: #f0fdf4;
+      color: #16a34a;
+    }
+
+    @media (max-width: 640px) {
+      .offline-container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      p {
+        font-size: 18px;
+      }
+
+      .features h2 {
+        font-size: 20px;
+      }
+
+      .features li {
+        font-size: 16px;
+      }
+
+      .emergency-button {
+        font-size: 20px;
+        padding: 16px 32px;
+      }
+
+      .retry-button {
+        font-size: 18px;
+        padding: 14px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="offline-icon">📡</div>
+    
+    <h1>You're Offline</h1>
+    <p>Don't worry! Essential features are still available while you're offline.</p>
+
+    <div class="features">
+      <h2>Available Offline:</h2>
+      <ul>
+        <li>View recent health data</li>
+        <li>Check medication schedule</li>
+        <li>View appointments</li>
+        <li>Send emergency alerts (SMS)</li>
+        <li>Enter health data (syncs when online)</li>
+      </ul>
+    </div>
+
+    <button class="emergency-button" onclick="triggerEmergency()">
+      🚨 EMERGENCY ALERT
+    </button>
+
+    <button class="retry-button" onclick="checkConnection()">
+      Try Reconnecting
+    </button>
+
+    <div id="status" class="status offline">
+      ⚠️ No Internet Connection
+    </div>
+  </div>
+
+  <script>
+    // Check online status
+    function updateStatus() {
+      const statusEl = document.getElementById('status');
+      if (navigator.onLine) {
+        statusEl.className = 'status online';
+        statusEl.textContent = '✓ Connected! Redirecting...';
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
+      } else {
+        statusEl.className = 'status offline';
+        statusEl.textContent = '⚠️ No Internet Connection';
+      }
+    }
+
+    // Check connection button
+    function checkConnection() {
+      updateStatus();
+      if (!navigator.onLine) {
+        alert('Still offline. Please check your internet connection.');
+      }
+    }
+
+    // Emergency alert function (works offline via SMS)
+    function triggerEmergency() {
+      if (confirm('Send emergency alert to your care circle?')) {
+        // Store emergency alert in IndexedDB for sync
+        const alert = {
+          type: 'emergency-alert',
+          timestamp: new Date().toISOString(),
+          location: null,
+          severity: 'critical'
+        };
+
+        // Try to get location if available
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              alert.location = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+              };
+              storeEmergencyAlert(alert);
+            },
+            () => {
+              storeEmergencyAlert(alert);
+            }
+          );
+        } else {
+          storeEmergencyAlert(alert);
+        }
+      }
+    }
+
+    // Store emergency alert in IndexedDB
+    function storeEmergencyAlert(alert) {
+      const request = indexedDB.open('HealthcareMonitoringDB', 1);
+      
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        const transaction = db.transaction(['syncQueue'], 'readwrite');
+        const store = transaction.objectStore('syncQueue');
+        
+        store.add({
+          id: Date.now(),
+          type: 'emergency-alert',
+          payload: alert,
+          timestamp: new Date().toISOString()
+        });
+
+        transaction.oncomplete = () => {
+          alert('Emergency alert queued! It will be sent when you\'re back online.\n\nFor immediate help, call emergency services directly.');
+          
+          // Try to trigger background sync
+          if ('serviceWorker' in navigator && 'sync' in navigator.serviceWorker) {
+            navigator.serviceWorker.ready.then((registration) => {
+              return registration.sync.register('sync-emergency-alerts');
+            });
+          }
+        };
+      };
+
+      request.onerror = () => {
+        alert('Failed to queue emergency alert. Please call emergency services directly.');
+      };
+    }
+
+    // Listen for online/offline events
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+
+    // Initial status check
+    updateStatus();
+
+    // Periodic connection check
+    setInterval(updateStatus, 5000);
+  </script>
+</body>
+</html>

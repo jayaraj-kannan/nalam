@@ -9,6 +9,12 @@ import { getUser } from '../shared/data-access/users';
 import { TABLES, putItem } from '../shared/dynamodb-client';
 import { sendNotification } from '../shared/notification-service';
 
+interface HealthDataAttachment {
+  type: 'vitals' | 'medication' | 'appointment';
+  data: any;
+  summary: string;
+}
+
 interface CareCircleMessage {
   messageId: string;
   primaryUserId: string;
@@ -19,12 +25,14 @@ interface CareCircleMessage {
   sentAt: string;
   readAt?: string;
   status: 'sent' | 'delivered' | 'read';
+  healthData?: HealthDataAttachment;
 }
 
 interface SendMessageRequest {
   recipientId: string;
   subject?: string;
   content: string;
+  healthData?: HealthDataAttachment;
 }
 
 /**
@@ -112,6 +120,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       content: request.content,
       sentAt: now.toISOString(),
       status: 'sent',
+      healthData: request.healthData,
     };
 
     // Store message in DynamoDB

@@ -7,6 +7,8 @@ export declare const TABLES: {
     APPOINTMENTS: string;
     ALERTS: string;
     CARE_CIRCLE: string;
+    CARE_CIRCLE_INVITATIONS: string;
+    CARE_CIRCLE_MESSAGES: string;
     DEVICES: string;
 };
 export declare function putItem<T>(tableName: string, item: T): Promise<void>;

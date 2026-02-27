@@ -1,0 +1,264 @@
+/* Data Sharing Controls Styles */
+/* Requirements: 8.5 - User-friendly data sharing interface */
+
+.data-sharing-controls {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.data-sharing-controls h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+
+.data-sharing-controls .description {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.data-sharing-controls.loading {
+  text-align: center;
+  padding: 4rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.data-sharing-controls.empty {
+  text-align: center;
+  padding: 4rem;
+}
+
+.data-sharing-controls.empty p {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0.5rem 0;
+}
+
+/* Error and Success Messages */
+.error-message {
+  background-color: #fee;
+  border: 2px solid #c33;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  color: #c33;
+  font-size: 1.1rem;
+}
+
+.success-message {
+  background-color: #efe;
+  border: 2px solid #3c3;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  color: #3c3;
+  font-size: 1.1rem;
+}
+
+/* Layout */
+.controls-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .controls-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Member List */
+.member-list {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.member-list h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.member-item {
+  width: 100%;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.member-item:hover {
+  border-color: #007bff;
+  background: #f8f9fa;
+}
+
+.member-item.selected {
+  border-color: #007bff;
+  background: #e7f3ff;
+}
+
+.member-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.25rem;
+}
+
+.member-relationship {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+/* Permission Controls */
+.permission-controls {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.member-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #eee;
+}
+
+.member-header h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+
+.member-email {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Preset Buttons */
+.preset-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.preset-button {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.preset-button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.preset-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Permissions List */
+.permissions-list h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.permission-item {
+  margin-bottom: 1.5rem;
+}
+
+.permission-label {
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+  gap: 1rem;
+}
+
+.permission-label input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  margin-top: 0.25rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.permission-info {
+  flex: 1;
+}
+
+.permission-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.25rem;
+}
+
+.permission-description {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Footer */
+.permission-footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #eee;
+}
+
+.audit-notice {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Accessibility */
+.permission-label:focus-within {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.member-item:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .member-item {
+    border-width: 3px;
+  }
+  
+  .permission-controls {
+    border-width: 3px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .member-item,
+  .preset-button {
+    transition: none;
+  }
+}

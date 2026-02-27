@@ -14,6 +14,8 @@ import * as cloudtrail from 'aws-cdk-lib/aws-cloudtrail';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as timestream from 'aws-cdk-lib/aws-timestream';
 import { DeviceIntegrationConstruct } from './device-integration-construct';
+import { ApiLambdaIntegrations } from './api-lambda-integrations';
+import { CloudWatchMonitoringConstruct } from './cloudwatch-monitoring-construct';
 
 export interface HealthcareMonitoringStackProps extends cdk.StackProps {
   environment: 'dev' | 'staging' | 'prod';
@@ -380,11 +382,179 @@ export class HealthcareMonitoringStack extends cdk.Stack {
         loggingLevel: apigateway.MethodLoggingLevel.INFO,
         dataTraceEnabled: true,
         metricsEnabled: true,
+        throttlingBurstLimit: environment === 'prod' ? 5000 : 1000,
+        throttlingRateLimit: environment === 'prod' ? 2000 : 500,
       },
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: apigateway.Cors.ALL_METHODS,
-        allowHeaders: ['Content-Type', 'Authorization'],
+        allowHeaders: ['Content-Type', 'Authorization', 'X-Api-Key'],
+        allowCredentials: true,
+      },
+      cloudWatchRole: true,
+      endpointConfiguration: {
+        types: [apigateway.EndpointType.REGIONAL],
+      },
+    });
+
+    // API Key for external integrations (e.g., health devices, third-party services)
+    const apiKey = api.addApiKey('ExternalIntegrationApiKey', {
+      apiKeyName: `healthcare-external-api-key-${environment}`,
+      description: 'API Key for external health device integrations',
+    });
+
+    // Usage Plan with throttling and quota limits
+    const usagePlan = api.addUsagePlan('UsagePlan', {
+      name: `healthcare-usage-plan-${environment}`,
+      description: 'Usage plan for healthcare monitoring API',
+      throttle: {
+        rateLimit: environment === 'prod' ? 1000 : 200,
+        burstLimit: environment === 'prod' ? 2000 : 500,
+      },
+      quota: {
+        limit: environment === 'prod' ? 1000000 : 100000,
+        period: apigateway.Period.MONTH,
+      },
+    });
+
+    // Associate API key with usage plan
+    usagePlan.addApiKey(apiKey);
+    usagePlan.addApiStage({
+      stage: api.deploymentStage,
+    });
+
+    // Request/Response Models for validation
+    // Vital Signs Model
+    const vitalSignsModel = api.addModel('VitalSignsModel', {
+      contentType: 'application/json',
+      modelName: 'VitalSignsModel',
+      schema: {
+        schema: apigateway.JsonSchemaVersion.DRAFT4,
+        title: 'VitalSigns',
+        type: apigateway.JsonSchemaType.OBJECT,
+        properties: {
+          heartRate: { type: apigateway.JsonSchemaType.NUMBER, minimum: 30, maximum: 250 },
+          bloodPressure: {
+            type: apigateway.JsonSchemaType.OBJECT,
+            properties: {
+              systolic: { type: apigateway.JsonSchemaType.NUMBER, minimum: 70, maximum: 250 },
+              diastolic: { type: apigateway.JsonSchemaType.NUMBER, minimum: 40, maximum: 150 },
+            },
+          },
+          temperature: { type: apigateway.JsonSchemaType.NUMBER, minimum: 35, maximum: 42 },
+          oxygenSaturation: { type: apigateway.JsonSchemaType.NUMBER, minimum: 70, maximum: 100 },
+          weight: { type: apigateway.JsonSchemaType.NUMBER, minimum: 20, maximum: 300 },
+          timestamp: { type: apigateway.JsonSchemaType.STRING, format: 'date-time' },
+          source: { 
+            type: apigateway.JsonSchemaType.STRING, 
+            enum: ['manual', 'device', 'wearable'] 
+          },
+        },
+      },
+    });
+
+    // Emergency Alert Model
+    const emergencyAlertModel = api.addModel('EmergencyAlertModel', {
+      contentType: 'application/json',
+      modelName: 'EmergencyAlertModel',
+      schema: {
+        schema: apigateway.JsonSchemaVersion.DRAFT4,
+        title: 'EmergencyAlert',
+        type: apigateway.JsonSchemaType.OBJECT,
+        required: ['severity'],
+        properties: {
+          location: {
+            type: apigateway.JsonSchemaType.OBJECT,
+            properties: {
+              latitude: { type: apigateway.JsonSchemaType.NUMBER },
+              longitude: { type: apigateway.JsonSchemaType.NUMBER },
+            },
+          },
+          symptoms: {
+            type: apigateway.JsonSchemaType.ARRAY,
+            items: { type: apigateway.JsonSchemaType.STRING },
+          },
+          severity: {
+            type: apigateway.JsonSchemaType.STRING,
+            enum: ['low', 'medium', 'high', 'critical'],
+          },
+        },
+      },
+    });
+
+    // Medication Model
+    const medicationModel = api.addModel('MedicationModel', {
+      contentType: 'application/json',
+      modelName: 'MedicationModel',
+      schema: {
+        schema: apigateway.JsonSchemaVersion.DRAFT4,
+        title: 'Medication',
+        type: apigateway.JsonSchemaType.OBJECT,
+        required: ['name', 'dosage', 'frequency'],
+        properties: {
+          name: { type: apigateway.JsonSchemaType.STRING, minLength: 1, maxLength: 200 },
+          dosage: { type: apigateway.JsonSchemaType.STRING, minLength: 1, maxLength: 100 },
+          frequency: { type: apigateway.JsonSchemaType.STRING, minLength: 1, maxLength: 100 },
+          scheduledTime: { type: apigateway.JsonSchemaType.STRING, format: 'date-time' },
+          instructions: { type: apigateway.JsonSchemaType.STRING, maxLength: 500 },
+        },
+      },
+    });
+
+    // Appointment Model
+    const appointmentModel = api.addModel('AppointmentModel', {
+      contentType: 'application/json',
+      modelName: 'AppointmentModel',
+      schema: {
+        schema: apigateway.JsonSchemaVersion.DRAFT4,
+        title: 'Appointment',
+        type: apigateway.JsonSchemaType.OBJECT,
+        required: ['scheduledTime', 'type'],
+        properties: {
+          scheduledTime: { type: apigateway.JsonSchemaType.STRING, format: 'date-time' },
+          type: { type: apigateway.JsonSchemaType.STRING, minLength: 1, maxLength: 100 },
+          provider: {
+            type: apigateway.JsonSchemaType.OBJECT,
+            properties: {
+              name: { type: apigateway.JsonSchemaType.STRING },
+              specialty: { type: apigateway.JsonSchemaType.STRING },
+              phone: { type: apigateway.JsonSchemaType.STRING },
+            },
+          },
+          notes: { type: apigateway.JsonSchemaType.STRING, maxLength: 1000 },
+        },
+      },
+    });
+
+    // Error Response Model
+    const errorResponseModel = api.addModel('ErrorResponseModel', {
+      contentType: 'application/json',
+      modelName: 'ErrorResponseModel',
+      schema: {
+        schema: apigateway.JsonSchemaVersion.DRAFT4,
+        title: 'ErrorResponse',
+        type: apigateway.JsonSchemaType.OBJECT,
+        properties: {
+          message: { type: apigateway.JsonSchemaType.STRING },
+          code: { type: apigateway.JsonSchemaType.STRING },
+          timestamp: { type: apigateway.JsonSchemaType.STRING },
+        },
+      },
+    });
+
+    // Success Response Model
+    const successResponseModel = api.addModel('SuccessResponseModel', {
+      contentType: 'application/json',
+      modelName: 'SuccessResponseModel',
+      schema: {
+        schema: apigateway.JsonSchemaVersion.DRAFT4,
+        title: 'SuccessResponse',
+        type: apigateway.JsonSchemaType.OBJECT,
+        properties: {
+          message: { type: apigateway.JsonSchemaType.STRING },
+          data: { type: apigateway.JsonSchemaType.OBJECT },
+          timestamp: { type: apigateway.JsonSchemaType.STRING },
+        },
       },
     });
 
@@ -425,6 +595,11 @@ export class HealthcareMonitoringStack extends cdk.Stack {
       description: 'API Gateway URL',
     });
 
+    new cdk.CfnOutput(this, 'ApiKeyId', {
+      value: apiKey.keyId,
+      description: 'API Key ID for external integrations',
+    });
+
     new cdk.CfnOutput(this, 'ReportsBucketName', {
       value: reportsBucket.bucketName,
       description: 'S3 Bucket for Health Reports',
@@ -463,6 +638,61 @@ export class HealthcareMonitoringStack extends cdk.Stack {
       deviceReadingsTable,
       encryptionKey,
       eventBus,
+    });
+
+    // API Gateway Lambda Integrations (Task 16.2)
+    new ApiLambdaIntegrations(this, 'ApiLambdaIntegrations', {
+      api,
+      environment,
+      primaryAuthorizer,
+      secondaryAuthorizer,
+      primaryUserPool,
+      secondaryUserPool,
+      primaryUserPoolClientId: primaryUserPoolClient.userPoolClientId,
+      secondaryUserPoolClientId: secondaryUserPoolClient.userPoolClientId,
+      usersTable,
+      healthRecordsTable,
+      medicationsTable,
+      appointmentsTable,
+      alertsTable,
+      careCircleTable,
+      devicesTable,
+      reportsBucket,
+      encryptionKey,
+      alertTopic,
+      medicationReminderTopic,
+      appointmentReminderTopic,
+      timestreamDatabaseName: timestreamDatabase.databaseName!,
+      vitalSignsTableName: vitalSignsTable.tableName!,
+      deviceReadingsTableName: deviceReadingsTable.tableName!,
+    });
+
+    // CloudWatch Monitoring and Alarms (Task 16.4)
+    // Requirements: 9.1 - Real-time notifications and monitoring
+    const monitoring = new CloudWatchMonitoringConstruct(this, 'CloudWatchMonitoring', {
+      environment,
+      api,
+      usersTable,
+      healthRecordsTable,
+      medicationsTable,
+      appointmentsTable,
+      alertsTable,
+      careCircleTable,
+      devicesTable,
+      alertTopic,
+      // Optional: Set alarm email for production
+      alarmEmail: environment === 'prod' ? process.env.ALARM_EMAIL : undefined,
+    });
+
+    // Output monitoring dashboard URL
+    new cdk.CfnOutput(this, 'MonitoringDashboardUrl', {
+      value: `https://console.aws.amazon.com/cloudwatch/home?region=${this.region}#dashboards:name=${monitoring.dashboard.dashboardName}`,
+      description: 'CloudWatch Monitoring Dashboard URL',
+    });
+
+    new cdk.CfnOutput(this, 'AlarmTopicArn', {
+      value: monitoring.alarmTopic.topicArn,
+      description: 'SNS Topic ARN for CloudWatch Alarms',
     });
   }
 }

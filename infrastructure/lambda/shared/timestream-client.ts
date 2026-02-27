@@ -1,21 +1,18 @@
-import { TimestreamWriteClient, WriteRecordsCommand, WriteRecordsCommandInput, _Record as TimestreamRecord, MeasureValueType } from '@aws-sdk/client-timestream-write';
-import { TimestreamQueryClient, QueryCommand, QueryCommandInput } from '@aws-sdk/client-timestream-query';
+import { WriteRecordsCommand, WriteRecordsCommandInput, _Record as TimestreamRecord, MeasureValueType } from '@aws-sdk/client-timestream-write';
+import { QueryCommand, QueryCommandInput } from '@aws-sdk/client-timestream-query';
+import { getTimestreamWriteClient, getTimestreamQueryClient } from './connection-pool';
 
 /**
  * Timestream client configuration for healthcare monitoring app
  * Provides write and query capabilities for time-series health data
+ * Performance: Uses connection pooling for optimal Lambda performance
  */
 
 const TIMESTREAM_DATABASE = process.env.TIMESTREAM_DATABASE || 'healthcare-timeseries-dev';
 
-// Initialize clients
-const writeClient = new TimestreamWriteClient({
-  region: process.env.AWS_REGION || 'us-east-1',
-});
-
-const queryClient = new TimestreamQueryClient({
-  region: process.env.AWS_REGION || 'us-east-1',
-});
+// Use connection-pooled clients for better performance
+const writeClient = getTimestreamWriteClient();
+const queryClient = getTimestreamQueryClient();
 
 /**
  * Table names for different types of health data

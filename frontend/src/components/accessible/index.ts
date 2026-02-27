@@ -26,3 +26,8 @@ export type { ThemeMode, FontSize } from './ThemeProvider';
 
 export { VoiceNavigationProvider, useVoiceNavigationContext, useVoiceCommands } from './VoiceNavigationProvider';
 export type { VoiceNavigationProviderProps } from './VoiceNavigationProvider';
+
+export { ErrorDisplay } from './ErrorDisplay';
+export type { ErrorDisplayProps } from './ErrorDisplay';
+
+export { ErrorBoundary } from './ErrorBoundary';

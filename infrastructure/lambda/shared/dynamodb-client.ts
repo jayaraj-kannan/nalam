@@ -1,9 +1,8 @@
 // DynamoDB Data Access Layer with encryption at rest
 // Requirements: 8.1, 8.4
+// Performance: Uses connection pooling for optimal Lambda performance
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
-  DynamoDBDocumentClient,
   PutCommand,
   GetCommand,
   QueryCommand,
@@ -12,22 +11,10 @@ import {
   BatchWriteCommand,
   BatchGetCommand,
 } from '@aws-sdk/lib-dynamodb';
+import { getDocClient } from './connection-pool';
 
-// Initialize DynamoDB client with encryption
-const client = new DynamoDBClient({
-  region: process.env.AWS_REGION || 'us-east-1',
-});
-
-// Create document client for easier data manipulation
-export const docClient = DynamoDBDocumentClient.from(client, {
-  marshallOptions: {
-    removeUndefinedValues: true,
-    convertClassInstanceToMap: true,
-  },
-  unmarshallOptions: {
-    wrapNumbers: false,
-  },
-});
+// Use connection-pooled document client for better performance
+export const docClient = getDocClient();
 
 // Table names from environment variables
 export const TABLES = {

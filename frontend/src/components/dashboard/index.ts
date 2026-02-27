@@ -7,11 +7,21 @@
  * - Maximum 6 main menu items
  * - High contrast and accessibility features
  * 
- * Requirements: 5.2
+ * Secondary User Dashboard - Caregiver interface with:
+ * - Health overview showing primary user status
+ * - Alerts panel with filtering and sorting
+ * - Communication hub for family messaging
+ * - Health reports viewer
+ * - Care circle settings panel
+ * 
+ * Requirements: 4.1, 5.2
  */
 
 export { PrimaryUserDashboard } from './PrimaryUserDashboard';
 export type { PrimaryUserDashboardProps } from './PrimaryUserDashboard';
+
+export { SecondaryUserDashboard } from './SecondaryUserDashboard';
+export type { SecondaryUserDashboardProps } from './SecondaryUserDashboard';
 
 export { HealthMetricsWidget } from './widgets/HealthMetricsWidget';
 export type { HealthMetricsWidgetProps } from './widgets/HealthMetricsWidget';
@@ -27,3 +37,18 @@ export type { AppointmentScheduleWidgetProps } from './widgets/AppointmentSchedu
 
 export { FamilyMessagesWidget } from './widgets/FamilyMessagesWidget';
 export type { FamilyMessagesWidgetProps } from './widgets/FamilyMessagesWidget';
+
+export { HealthOverviewWidget } from './widgets/HealthOverviewWidget';
+export type { HealthOverviewWidgetProps } from './widgets/HealthOverviewWidget';
+
+export { AlertsPanelWidget } from './widgets/AlertsPanelWidget';
+export type { AlertsPanelWidgetProps } from './widgets/AlertsPanelWidget';
+
+export { CommunicationHubWidget } from './widgets/CommunicationHubWidget';
+export type { CommunicationHubWidgetProps } from './widgets/CommunicationHubWidget';
+
+export { HealthReportsWidget } from './widgets/HealthReportsWidget';
+export type { HealthReportsWidgetProps } from './widgets/HealthReportsWidget';
+
+export { CareCircleSettingsWidget } from './widgets/CareCircleSettingsWidget';
+export type { CareCircleSettingsWidgetProps } from './widgets/CareCircleSettingsWidget';

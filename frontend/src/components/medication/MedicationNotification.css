@@ -1,0 +1,157 @@
+/* Medication Notification - Prominent Alert Design */
+
+.medication-notification {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 24px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.medication-notification--visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Notification Content */
+.medication-notification-content {
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 4px solid #0066CC;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Notification Icon */
+.medication-notification-icon {
+  font-size: 80px;
+  text-align: center;
+  line-height: 1;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Notification Details */
+.medication-notification-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+}
+
+.medication-notification-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  background-color: #F0F8FF;
+  border-radius: 12px;
+  border: 2px solid #0066CC;
+}
+
+/* Instructions */
+.medication-notification-instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background-color: #FFF8E1;
+  border-radius: 8px;
+  border: 2px solid #FFB300;
+  text-align: left;
+}
+
+/* Actions */
+.medication-notification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.medication-notification-actions button {
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .medication-notification {
+    padding: 16px;
+  }
+
+  .medication-notification-content {
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .medication-notification-icon {
+    font-size: 60px;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .medication-notification-content {
+    border-width: 6px;
+  }
+
+  .medication-notification-info,
+  .medication-notification-instructions {
+    border-width: 3px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .medication-notification {
+    transition: none;
+  }
+
+  .medication-notification-content {
+    animation: none;
+  }
+
+  .medication-notification-icon {
+    animation: none;
+  }
+}
+
+/* Focus Management */
+.medication-notification-content:focus-within {
+  outline: 4px solid #FFD700;
+  outline-offset: 4px;
+}

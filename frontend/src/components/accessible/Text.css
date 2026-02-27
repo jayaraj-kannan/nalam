@@ -1,0 +1,114 @@
+/* Accessible Text Styles - Elderly-Friendly Design */
+
+.accessible-text {
+  /* Base font size: minimum 18pt (24px) */
+  font-size: 24px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* Variant Styles */
+.accessible-text--heading {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.accessible-text--body {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.accessible-text--label {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.5;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.accessible-text--caption {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Size Variants */
+.accessible-text--normal {
+  font-size: 24px;
+}
+
+.accessible-text--large {
+  font-size: 28px;
+}
+
+.accessible-text--extra-large {
+  font-size: 36px;
+}
+
+/* Weight Variants */
+.accessible-text--normal {
+  font-weight: 400;
+}
+
+.accessible-text--semibold {
+  font-weight: 600;
+}
+
+.accessible-text--bold {
+  font-weight: 700;
+}
+
+/* Color Variants - High Contrast */
+.accessible-text--primary {
+  color: #000000;
+}
+
+.accessible-text--secondary {
+  color: #333333;
+}
+
+.accessible-text--error {
+  color: #CC0000;
+}
+
+.accessible-text--success {
+  color: #008800;
+}
+
+.accessible-text--warning {
+  color: #CC6600;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .accessible-text--primary {
+    color: #000000;
+  }
+  
+  .accessible-text--secondary {
+    color: #000000;
+  }
+  
+  .accessible-text--error {
+    color: #AA0000;
+  }
+  
+  .accessible-text--success {
+    color: #006600;
+  }
+  
+  .accessible-text--warning {
+    color: #AA5500;
+  }
+}
+
+/* Ensure readability on different backgrounds */
+.accessible-text {
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

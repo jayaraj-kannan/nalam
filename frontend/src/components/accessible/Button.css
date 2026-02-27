@@ -1,0 +1,168 @@
+/* Accessible Button Styles - Elderly-Friendly Design */
+
+.accessible-button {
+  /* Minimum touch target: 44x44px (WCAG 2.1 AA) */
+  min-width: 44px;
+  min-height: 44px;
+  
+  /* Large padding for comfortable touch */
+  padding: 16px 24px;
+  
+  /* Large, readable font (minimum 18pt = 24px) */
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.5;
+  
+  /* High contrast and clear borders */
+  border: 3px solid transparent;
+  border-radius: 8px;
+  
+  /* Smooth transitions */
+  transition: all 0.2s ease-in-out;
+  
+  /* Cursor and interaction */
+  cursor: pointer;
+  user-select: none;
+  
+  /* Flexbox for content alignment */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  
+  /* Prevent text wrapping */
+  white-space: nowrap;
+}
+
+/* Primary Button - High Contrast Blue */
+.accessible-button--primary {
+  background-color: #0066CC;
+  color: #FFFFFF;
+  border-color: #0066CC;
+}
+
+.accessible-button--primary:hover:not(:disabled) {
+  background-color: #0052A3;
+  border-color: #0052A3;
+  transform: scale(1.05);
+}
+
+.accessible-button--primary:active:not(:disabled) {
+  background-color: #003D7A;
+  transform: scale(0.98);
+}
+
+.accessible-button--primary:focus-visible {
+  outline: 4px solid #FFD700;
+  outline-offset: 4px;
+}
+
+/* Secondary Button - High Contrast Gray */
+.accessible-button--secondary {
+  background-color: #FFFFFF;
+  color: #000000;
+  border-color: #000000;
+}
+
+.accessible-button--secondary:hover:not(:disabled) {
+  background-color: #F0F0F0;
+  transform: scale(1.05);
+}
+
+.accessible-button--secondary:active:not(:disabled) {
+  background-color: #E0E0E0;
+  transform: scale(0.98);
+}
+
+.accessible-button--secondary:focus-visible {
+  outline: 4px solid #FFD700;
+  outline-offset: 4px;
+}
+
+/* Emergency Button - High Contrast Red */
+.accessible-button--emergency {
+  background-color: #CC0000;
+  color: #FFFFFF;
+  border-color: #CC0000;
+  font-weight: 700;
+}
+
+.accessible-button--emergency:hover:not(:disabled) {
+  background-color: #A30000;
+  border-color: #A30000;
+  transform: scale(1.05);
+}
+
+.accessible-button--emergency:active:not(:disabled) {
+  background-color: #7A0000;
+  transform: scale(0.98);
+}
+
+.accessible-button--emergency:focus-visible {
+  outline: 4px solid #FFD700;
+  outline-offset: 4px;
+}
+
+/* Success Button - High Contrast Green */
+.accessible-button--success {
+  background-color: #008800;
+  color: #FFFFFF;
+  border-color: #008800;
+}
+
+.accessible-button--success:hover:not(:disabled) {
+  background-color: #006600;
+  border-color: #006600;
+  transform: scale(1.05);
+}
+
+.accessible-button--success:active:not(:disabled) {
+  background-color: #004400;
+  transform: scale(0.98);
+}
+
+.accessible-button--success:focus-visible {
+  outline: 4px solid #FFD700;
+  outline-offset: 4px;
+}
+
+/* Size Variants */
+.accessible-button--large {
+  min-width: 120px;
+  min-height: 60px;
+  font-size: 24px;
+  padding: 18px 32px;
+}
+
+.accessible-button--extra-large {
+  min-width: 160px;
+  min-height: 80px;
+  font-size: 28px;
+  padding: 24px 40px;
+}
+
+/* Disabled State */
+.accessible-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .accessible-button {
+    border-width: 4px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .accessible-button {
+    transition: none;
+  }
+  
+  .accessible-button:hover:not(:disabled),
+  .accessible-button:active:not(:disabled) {
+    transform: none;
+  }
+}

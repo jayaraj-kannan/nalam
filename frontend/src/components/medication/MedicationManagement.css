@@ -1,0 +1,223 @@
+/* Medication Management Interface - Elderly-Friendly Design */
+
+.medication-management {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #FFFFFF;
+}
+
+/* Header Section */
+.medication-header {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 3px solid #E0E0E0;
+}
+
+/* Loading and Error States */
+.medication-loading,
+.medication-error,
+.medication-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+/* Schedule Layout */
+.medication-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Day Group */
+.medication-day-group {
+  background-color: #F8F9FA;
+  border-radius: 12px;
+  padding: 24px;
+  border: 2px solid #E0E0E0;
+}
+
+.medication-day-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #D0D0D0;
+}
+
+/* Medication List */
+.medication-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Medication Card */
+.medication-card {
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: 24px;
+  align-items: center;
+  padding: 24px;
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  border: 3px solid #E0E0E0;
+  transition: all 0.2s ease-in-out;
+}
+
+.medication-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Card Status Variants */
+.medication-card--overdue {
+  border-color: #CC0000;
+  background-color: #FFF5F5;
+}
+
+.medication-card--due {
+  border-color: #FF8800;
+  background-color: #FFF8F0;
+}
+
+.medication-card--upcoming {
+  border-color: #0066CC;
+  background-color: #F0F8FF;
+}
+
+.medication-card--taken {
+  border-color: #008800;
+  background-color: #F5FFF5;
+  opacity: 0.8;
+}
+
+/* Time Indicator */
+.medication-time-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+/* Status Badges */
+.medication-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.medication-badge--overdue {
+  background-color: #CC0000;
+  color: #FFFFFF;
+}
+
+.medication-badge--due {
+  background-color: #FF8800;
+  color: #FFFFFF;
+}
+
+.medication-badge--upcoming {
+  background-color: #0066CC;
+  color: #FFFFFF;
+}
+
+/* Medication Details */
+.medication-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+/* Medication Action */
+.medication-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+}
+
+/* Confirmed State */
+.medication-confirmed {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background-color: #E8F5E9;
+  border-radius: 8px;
+  border: 2px solid #008800;
+}
+
+.medication-checkmark {
+  font-size: 48px;
+  color: #008800;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .medication-management {
+    padding: 16px;
+  }
+
+  .medication-card {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .medication-time-indicator {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .medication-action {
+    width: 100%;
+  }
+
+  .medication-action button {
+    width: 100%;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .medication-card {
+    border-width: 4px;
+  }
+
+  .medication-badge {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .medication-card {
+    transition: none;
+  }
+
+  .medication-card:hover {
+    transform: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .medication-action button {
+    display: none;
+  }
+
+  .medication-card {
+    break-inside: avoid;
+  }
+}

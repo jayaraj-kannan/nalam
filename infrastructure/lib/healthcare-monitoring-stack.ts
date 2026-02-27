@@ -13,6 +13,7 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as cloudtrail from 'aws-cdk-lib/aws-cloudtrail';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as timestream from 'aws-cdk-lib/aws-timestream';
+import { DeviceIntegrationConstruct } from './device-integration-construct';
 
 export interface HealthcareMonitoringStackProps extends cdk.StackProps {
   environment: 'dev' | 'staging' | 'prod';
@@ -452,6 +453,16 @@ export class HealthcareMonitoringStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'SensorDataTableName', {
       value: sensorDataTable.tableName!,
       description: 'Timestream Sensor Data Table Name',
+    });
+
+    // Device Integration Service (Requirements 7.1, 7.2, 7.3, 7.4, 7.5)
+    const deviceIntegration = new DeviceIntegrationConstruct(this, 'DeviceIntegration', {
+      environment,
+      devicesTable,
+      timestreamDatabase,
+      deviceReadingsTable,
+      encryptionKey,
+      eventBus,
     });
   }
 }

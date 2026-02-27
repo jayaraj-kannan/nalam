@@ -37,6 +37,8 @@ export const TABLES = {
   APPOINTMENTS: process.env.APPOINTMENTS_TABLE || '',
   ALERTS: process.env.ALERTS_TABLE || '',
   CARE_CIRCLE: process.env.CARE_CIRCLE_TABLE || '',
+  CARE_CIRCLE_INVITATIONS: process.env.CARE_CIRCLE_INVITATIONS_TABLE || '',
+  CARE_CIRCLE_MESSAGES: process.env.CARE_CIRCLE_MESSAGES_TABLE || '',
   DEVICES: process.env.DEVICES_TABLE || '',
 };
 

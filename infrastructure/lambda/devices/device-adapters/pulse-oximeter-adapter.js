@@ -1,0 +1,91 @@
+"use strict";
+// Pulse Oximeter Adapter
+// Requirements: 7.2
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PulseOximeterAdapter = void 0;
+class PulseOximeterAdapter {
+    /**
+     * Convert raw pulse oximeter data to standardized sensor readings
+     */
+    static convertToSensorReadings(data) {
+        const readings = [];
+        // Oxygen saturation reading
+        readings.push({
+            type: 'oxygen_saturation',
+            value: data.oxygenSaturation,
+            unit: '%',
+            accuracy: 95, // Typical accuracy for pulse oximeters
+        });
+        // Heart rate reading
+        readings.push({
+            type: 'heart_rate',
+            value: data.heartRate,
+            unit: 'bpm',
+            accuracy: 95,
+        });
+        return readings;
+    }
+    /**
+     * Parse data from generic pulse oximeters
+     */
+    static parseGenericData(rawData) {
+        // Example format: "SPO2:98,HR:72,PI:5.2,TIME:2024-01-15T10:30:00Z"
+        const parts = rawData.split(',');
+        const data = {};
+        parts.forEach((part) => {
+            const [key, value] = part.split(':');
+            data[key] = value;
+        });
+        return {
+            oxygenSaturation: parseInt(data.SPO2, 10),
+            heartRate: parseInt(data.HR, 10),
+            perfusionIndex: data.PI ? parseFloat(data.PI) : undefined,
+            timestamp: new Date(data.TIME || Date.now()),
+        };
+    }
+    /**
+     * Parse data from Masimo pulse oximeters
+     */
+    static parseMasimoData(rawData) {
+        return {
+            oxygenSaturation: rawData.spo2,
+            heartRate: rawData.pulse_rate,
+            perfusionIndex: rawData.perfusion_index,
+            timestamp: new Date(rawData.timestamp * 1000),
+        };
+    }
+    /**
+     * Validate pulse oximeter reading
+     */
+    static validate(reading) {
+        // SpO2 should be between 70-100%
+        if (reading.oxygenSaturation < 70 || reading.oxygenSaturation > 100) {
+            return false;
+        }
+        // Heart rate should be between 30-220 bpm
+        if (reading.heartRate < 30 || reading.heartRate > 220) {
+            return false;
+        }
+        // Perfusion index validation if present (typically 0-20%)
+        if (reading.perfusionIndex !== undefined && (reading.perfusionIndex < 0 || reading.perfusionIndex > 20)) {
+            return false;
+        }
+        return true;
+    }
+    /**
+     * Classify oxygen saturation level
+     */
+    static classifySpO2Level(spo2) {
+        if (spo2 < 90) {
+            return 'critical';
+        }
+        else if (spo2 < 95) {
+            return 'low';
+        }
+        else {
+            return 'normal';
+        }
+    }
+}
+exports.PulseOximeterAdapter = PulseOximeterAdapter;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVsc2Utb3hpbWV0ZXItYWRhcHRlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInB1bHNlLW94aW1ldGVyLWFkYXB0ZXIudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBLHlCQUF5QjtBQUN6QixvQkFBb0I7OztBQVdwQixNQUFhLG9CQUFvQjtJQUMvQjs7T0FFRztJQUNILE1BQU0sQ0FBQyx1QkFBdUIsQ0FBQyxJQUEwQjtRQUN2RCxNQUFNLFFBQVEsR0FBb0IsRUFBRSxDQUFDO1FBRXJDLDRCQUE0QjtRQUM1QixRQUFRLENBQUMsSUFBSSxDQUFDO1lBQ1osSUFBSSxFQUFFLG1CQUFtQjtZQUN6QixLQUFLLEVBQUUsSUFBSSxDQUFDLGdCQUFnQjtZQUM1QixJQUFJLEVBQUUsR0FBRztZQUNULFFBQVEsRUFBRSxFQUFFLEVBQUUsdUNBQXVDO1NBQ3RELENBQUMsQ0FBQztRQUVILHFCQUFxQjtRQUNyQixRQUFRLENBQUMsSUFBSSxDQUFDO1lBQ1osSUFBSSxFQUFFLFlBQVk7WUFDbEIsS0FBSyxFQUFFLElBQUksQ0FBQyxTQUFTO1lBQ3JCLElBQUksRUFBRSxLQUFLO1lBQ1gsUUFBUSxFQUFFLEVBQUU7U0FDYixDQUFDLENBQUM7UUFFSCxPQUFPLFFBQVEsQ0FBQztJQUNsQixDQUFDO0lBRUQ7O09BRUc7SUFDSCxNQUFNLENBQUMsZ0JBQWdCLENBQUMsT0FBZTtRQUNyQyxtRUFBbUU7UUFDbkUsTUFBTSxLQUFLLEdBQUcsT0FBTyxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsQ0FBQztRQUNqQyxNQUFNLElBQUksR0FBMkIsRUFBRSxDQUFDO1FBRXhDLEtBQUssQ0FBQyxPQUFPLENBQUMsQ0FBQyxJQUFJLEVBQUUsRUFBRTtZQUNyQixNQUFNLENBQUMsR0FBRyxFQUFFLEtBQUssQ0FBQyxHQUFHLElBQUksQ0FBQyxLQUFLLENBQUMsR0FBRyxDQUFDLENBQUM7WUFDckMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxHQUFHLEtBQUssQ0FBQztRQUNwQixDQUFDLENBQUMsQ0FBQztRQUVILE9BQU87WUFDTCxnQkFBZ0IsRUFBRSxRQUFRLENBQUMsSUFBSSxDQUFDLElBQUksRUFBRSxFQUFFLENBQUM7WUFDekMsU0FBUyxFQUFFLFFBQVEsQ0FBQyxJQUFJLENBQUMsRUFBRSxFQUFFLEVBQUUsQ0FBQztZQUNoQyxjQUFjLEVBQUUsSUFBSSxDQUFDLEVBQUUsQ0FBQyxDQUFDLENBQUMsVUFBVSxDQUFDLElBQUksQ0FBQyxFQUFFLENBQUMsQ0FBQyxDQUFDLENBQUMsU0FBUztZQUN6RCxTQUFTLEVBQUUsSUFBSSxJQUFJLENBQUMsSUFBSSxDQUFDLElBQUksSUFBSSxJQUFJLENBQUMsR0FBRyxFQUFFLENBQUM7U0FDN0MsQ0FBQztJQUNKLENBQUM7SUFFRDs7T0FFRztJQUNILE1BQU0sQ0FBQyxlQUFlLENBQUMsT0FBZ0M7UUFDckQsT0FBTztZQUNMLGdCQUFnQixFQUFFLE9BQU8sQ0FBQyxJQUFjO1lBQ3hDLFNBQVMsRUFBRSxPQUFPLENBQUMsVUFBb0I7WUFDdkMsY0FBYyxFQUFFLE9BQU8sQ0FBQyxlQUFxQztZQUM3RCxTQUFTLEVBQUUsSUFBSSxJQUFJLENBQUUsT0FBTyxDQUFDLFNBQW9CLEdBQUcsSUFBSSxDQUFDO1NBQzFELENBQUM7SUFDSixDQUFDO0lBRUQ7O09BRUc7SUFDSCxNQUFNLENBQUMsUUFBUSxDQUFDLE9BQTZCO1FBQzNDLGlDQUFpQztRQUNqQyxJQUFJLE9BQU8sQ0FBQyxnQkFBZ0IsR0FBRyxFQUFFLElBQUksT0FBTyxDQUFDLGdCQUFnQixHQUFHLEdBQUcsRUFBRSxDQUFDO1lBQ3BFLE9BQU8sS0FBSyxDQUFDO1FBQ2YsQ0FBQztRQUVELDBDQUEwQztRQUMxQyxJQUFJLE9BQU8sQ0FBQyxTQUFTLEdBQUcsRUFBRSxJQUFJLE9BQU8sQ0FBQyxTQUFTLEdBQUcsR0FBRyxFQUFFLENBQUM7WUFDdEQsT0FBTyxLQUFLLENBQUM7UUFDZixDQUFDO1FBRUQsMERBQTBEO1FBQzFELElBQUksT0FBTyxDQUFDLGNBQWMsS0FBSyxTQUFTLElBQUksQ0FBQyxPQUFPLENBQUMsY0FBYyxHQUFHLENBQUMsSUFBSSxPQUFPLENBQUMsY0FBYyxHQUFHLEVBQUUsQ0FBQyxFQUFFLENBQUM7WUFDeEcsT0FBTyxLQUFLLENBQUM7UUFDZixDQUFDO1FBRUQsT0FBTyxJQUFJLENBQUM7SUFDZCxDQUFDO0lBRUQ7O09BRUc7SUFDSCxNQUFNLENBQUMsaUJBQWlCLENBQUMsSUFBWTtRQUNuQyxJQUFJLElBQUksR0FBRyxFQUFFLEVBQUUsQ0FBQztZQUNkLE9BQU8sVUFBVSxDQUFDO1FBQ3BCLENBQUM7YUFBTSxJQUFJLElBQUksR0FBRyxFQUFFLEVBQUUsQ0FBQztZQUNyQixPQUFPLEtBQUssQ0FBQztRQUNmLENBQUM7YUFBTSxDQUFDO1lBQ04sT0FBTyxRQUFRLENBQUM7UUFDbEIsQ0FBQztJQUNILENBQUM7Q0FDRjtBQTdGRCxvREE2RkMiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBQdWxzZSBPeGltZXRlciBBZGFwdGVyXG4vLyBSZXF1aXJlbWVudHM6IDcuMlxuXG5pbXBvcnQgeyBTZW5zb3JSZWFkaW5nIH0gZnJvbSAnLi4vLi4vc2hhcmVkL3R5cGVzJztcblxuZXhwb3J0IGludGVyZmFjZSBQdWxzZU94aW1ldGVyUmVhZGluZyB7XG4gIG94eWdlblNhdHVyYXRpb246IG51bWJlcjsgLy8gU3BPMiBwZXJjZW50YWdlXG4gIGhlYXJ0UmF0ZTogbnVtYmVyOyAvLyBicG1cbiAgcGVyZnVzaW9uSW5kZXg/OiBudW1iZXI7IC8vIFBJIHBlcmNlbnRhZ2VcbiAgdGltZXN0YW1wOiBEYXRlO1xufVxuXG5leHBvcnQgY2xhc3MgUHVsc2VPeGltZXRlckFkYXB0ZXIge1xuICAvKipcbiAgICogQ29udmVydCByYXcgcHVsc2Ugb3hpbWV0ZXIgZGF0YSB0byBzdGFuZGFyZGl6ZWQgc2Vuc29yIHJlYWRpbmdzXG4gICAqL1xuICBzdGF0aWMgY29udmVydFRvU2Vuc29yUmVhZGluZ3MoZGF0YTogUHVsc2VPeGltZXRlclJlYWRpbmcpOiBTZW5zb3JSZWFkaW5nW10ge1xuICAgIGNvbnN0IHJlYWRpbmdzOiBTZW5zb3JSZWFkaW5nW10gPSBbXTtcblxuICAgIC8vIE94eWdlbiBzYXR1cmF0aW9uIHJlYWRpbmdcbiAgICByZWFkaW5ncy5wdXNoKHtcbiAgICAgIHR5cGU6ICdveHlnZW5fc2F0dXJhdGlvbicsXG4gICAgICB2YWx1ZTogZGF0YS5veHlnZW5TYXR1cmF0aW9uLFxuICAgICAgdW5pdDogJyUnLFxuICAgICAgYWNjdXJhY3k6IDk1LCAvLyBUeXBpY2FsIGFjY3VyYWN5IGZvciBwdWxzZSBveGltZXRlcnNcbiAgICB9KTtcblxuICAgIC8vIEhlYXJ0IHJhdGUgcmVhZGluZ1xuICAgIHJlYWRpbmdzLnB1c2goe1xuICAgICAgdHlwZTogJ2hlYXJ0X3JhdGUnLFxuICAgICAgdmFsdWU6IGRhdGEuaGVhcnRSYXRlLFxuICAgICAgdW5pdDogJ2JwbScsXG4gICAgICBhY2N1cmFjeTogOTUsXG4gICAgfSk7XG5cbiAgICByZXR1cm4gcmVhZGluZ3M7XG4gIH1cblxuICAvKipcbiAgICogUGFyc2UgZGF0YSBmcm9tIGdlbmVyaWMgcHVsc2Ugb3hpbWV0ZXJzXG4gICAqL1xuICBzdGF0aWMgcGFyc2VHZW5lcmljRGF0YShyYXdEYXRhOiBzdHJpbmcpOiBQdWxzZU94aW1ldGVyUmVhZGluZyB7XG4gICAgLy8gRXhhbXBsZSBmb3JtYXQ6IFwiU1BPMjo5OCxIUjo3MixQSTo1LjIsVElNRToyMDI0LTAxLTE1VDEwOjMwOjAwWlwiXG4gICAgY29uc3QgcGFydHMgPSByYXdEYXRhLnNwbGl0KCcsJyk7XG4gICAgY29uc3QgZGF0YTogUmVjb3JkPHN0cmluZywgc3RyaW5nPiA9IHt9O1xuXG4gICAgcGFydHMuZm9yRWFjaCgocGFydCkgPT4ge1xuICAgICAgY29uc3QgW2tleSwgdmFsdWVdID0gcGFydC5zcGxpdCgnOicpO1xuICAgICAgZGF0YVtrZXldID0gdmFsdWU7XG4gICAgfSk7XG5cbiAgICByZXR1cm4ge1xuICAgICAgb3h5Z2VuU2F0dXJhdGlvbjogcGFyc2VJbnQoZGF0YS5TUE8yLCAxMCksXG4gICAgICBoZWFydFJhdGU6IHBhcnNlSW50KGRhdGEuSFIsIDEwKSxcbiAgICAgIHBlcmZ1c2lvbkluZGV4OiBkYXRhLlBJID8gcGFyc2VGbG9hdChkYXRhLlBJKSA6IHVuZGVmaW5lZCxcbiAgICAgIHRpbWVzdGFtcDogbmV3IERhdGUoZGF0YS5USU1FIHx8IERhdGUubm93KCkpLFxuICAgIH07XG4gIH1cblxuICAvKipcbiAgICogUGFyc2UgZGF0YSBmcm9tIE1hc2ltbyBwdWxzZSBveGltZXRlcnNcbiAgICovXG4gIHN0YXRpYyBwYXJzZU1hc2ltb0RhdGEocmF3RGF0YTogUmVjb3JkPHN0cmluZywgdW5rbm93bj4pOiBQdWxzZU94aW1ldGVyUmVhZGluZyB7XG4gICAgcmV0dXJuIHtcbiAgICAgIG94eWdlblNhdHVyYXRpb246IHJhd0RhdGEuc3BvMiBhcyBudW1iZXIsXG4gICAgICBoZWFydFJhdGU6IHJhd0RhdGEucHVsc2VfcmF0ZSBhcyBudW1iZXIsXG4gICAgICBwZXJmdXNpb25JbmRleDogcmF3RGF0YS5wZXJmdXNpb25faW5kZXggYXMgbnVtYmVyIHwgdW5kZWZpbmVkLFxuICAgICAgdGltZXN0YW1wOiBuZXcgRGF0ZSgocmF3RGF0YS50aW1lc3RhbXAgYXMgbnVtYmVyKSAqIDEwMDApLFxuICAgIH07XG4gIH1cblxuICAvKipcbiAgICogVmFsaWRhdGUgcHVsc2Ugb3hpbWV0ZXIgcmVhZGluZ1xuICAgKi9cbiAgc3RhdGljIHZhbGlkYXRlKHJlYWRpbmc6IFB1bHNlT3hpbWV0ZXJSZWFkaW5nKTogYm9vbGVhbiB7XG4gICAgLy8gU3BPMiBzaG91bGQgYmUgYmV0d2VlbiA3MC0xMDAlXG4gICAgaWYgKHJlYWRpbmcub3h5Z2VuU2F0dXJhdGlvbiA8IDcwIHx8IHJlYWRpbmcub3h5Z2VuU2F0dXJhdGlvbiA+IDEwMCkge1xuICAgICAgcmV0dXJuIGZhbHNlO1xuICAgIH1cblxuICAgIC8vIEhlYXJ0IHJhdGUgc2hvdWxkIGJlIGJldHdlZW4gMzAtMjIwIGJwbVxuICAgIGlmIChyZWFkaW5nLmhlYXJ0UmF0ZSA8IDMwIHx8IHJlYWRpbmcuaGVhcnRSYXRlID4gMjIwKSB7XG4gICAgICByZXR1cm4gZmFsc2U7XG4gICAgfVxuXG4gICAgLy8gUGVyZnVzaW9uIGluZGV4IHZhbGlkYXRpb24gaWYgcHJlc2VudCAodHlwaWNhbGx5IDAtMjAlKVxuICAgIGlmIChyZWFkaW5nLnBlcmZ1c2lvbkluZGV4ICE9PSB1bmRlZmluZWQgJiYgKHJlYWRpbmcucGVyZnVzaW9uSW5kZXggPCAwIHx8IHJlYWRpbmcucGVyZnVzaW9uSW5kZXggPiAyMCkpIHtcbiAgICAgIHJldHVybiBmYWxzZTtcbiAgICB9XG5cbiAgICByZXR1cm4gdHJ1ZTtcbiAgfVxuXG4gIC8qKlxuICAgKiBDbGFzc2lmeSBveHlnZW4gc2F0dXJhdGlvbiBsZXZlbFxuICAgKi9cbiAgc3RhdGljIGNsYXNzaWZ5U3BPMkxldmVsKHNwbzI6IG51bWJlcik6ICdjcml0aWNhbCcgfCAnbG93JyB8ICdub3JtYWwnIHtcbiAgICBpZiAoc3BvMiA8IDkwKSB7XG4gICAgICByZXR1cm4gJ2NyaXRpY2FsJztcbiAgICB9IGVsc2UgaWYgKHNwbzIgPCA5NSkge1xuICAgICAgcmV0dXJuICdsb3cnO1xuICAgIH0gZWxzZSB7XG4gICAgICByZXR1cm4gJ25vcm1hbCc7XG4gICAgfVxuICB9XG59XG4iXX0=

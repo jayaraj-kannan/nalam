@@ -1,0 +1,76 @@
+/**
+ * Emergency Alert Widget Styles
+ * Prominent, high-visibility emergency button
+ */
+
+.emergency-alert-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+  border: 3px solid #d32f2f;
+  border-radius: 12px;
+  min-height: 180px;
+}
+
+.emergency-button {
+  width: 100%;
+  max-width: 400px;
+  min-height: 100px;
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.emergency-button:hover:not(:disabled) {
+  transform: scale(1.02);
+  box-shadow: 0 6px 16px rgba(211, 47, 47, 0.4);
+}
+
+.emergency-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.emergency-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.emergency-help-text {
+  text-align: center;
+}
+
+.emergency-confirmation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* High contrast theme */
+.theme-high-contrast .emergency-alert-widget {
+  border-width: 4px;
+  background: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .emergency-button {
+    min-height: 80px;
+    font-size: 1.5rem;
+  }
+
+  .emergency-icon {
+    font-size: 2rem;
+  }
+}

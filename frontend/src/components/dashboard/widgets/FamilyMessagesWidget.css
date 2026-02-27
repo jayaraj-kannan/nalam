@@ -1,0 +1,88 @@
+/**
+ * Family Messages Widget Styles
+ */
+
+.family-messages-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+}
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.message-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--background-primary, #ffffff);
+  border: 2px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.message-item.message-unread {
+  border-color: var(--primary-color, #1976d2);
+  background-color: var(--primary-light, #e3f2fd);
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.message-content {
+  line-height: 1.5;
+}
+
+.mark-read-button {
+  align-self: flex-start;
+}
+
+.widget-footer {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+}
+
+.view-all-button {
+  width: 100%;
+}
+
+/* High contrast theme */
+.theme-high-contrast .message-item {
+  border-width: 3px;
+}
+
+.theme-high-contrast .message-item.message-unread {
+  border-width: 4px;
+}
+
+/* Scrollbar styling */
+.message-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.message-list::-webkit-scrollbar-track {
+  background: var(--background-secondary, #f5f5f5);
+  border-radius: 4px;
+}
+
+.message-list::-webkit-scrollbar-thumb {
+  background: var(--border-color, #e0e0e0);
+  border-radius: 4px;
+}
+
+.message-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary, #666666);
+}
